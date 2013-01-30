@@ -52,6 +52,13 @@ object ContentMD5 {
   def apply(data: Array[Byte]): String = new String(Base64.encode(md5Digester.digest(data)), "utf-8")
 }
 
+trait HttpService {
+  type Res = Promise[Either[String, Elem]]
+  def get(uri: String, headers: Map[String, String]): Res
+  def post(uri: String, headers: Map[String, String], body: String): Res
+  def post(uri: String, headers: Map[String, String], body: Array[Byte]): Res
+}
+
 trait DispatchHttpService {
   def get(uri: String, headers: Map[String, String]) = {
     val req = url(uri) <:< headers
@@ -78,7 +85,7 @@ trait DispatchHttpService {
       throw ApiError(res.getStatusCode, if (res.hasResponseBody) as.xml.Elem(res) else <error />)
 }
 
-trait Api extends DispatchHttpService {
+trait Api extends HttpService {
 
   import ScalaPost._
 
@@ -104,7 +111,7 @@ trait Api extends DispatchHttpService {
     finalDelivery <- deliverMessage(contentLink, content).right
   } yield finalDelivery
 
-  def get[T](uri: String = baseUrl): Promise[Either[String, Elem]] = {
+  def get(uri: String = baseUrl): Res = {
     val path = extractPath(uri)
     val date = formatDate(new Date())
     val signature = sign(stringToSign("get", path, date, user))
@@ -152,7 +159,7 @@ trait Api extends DispatchHttpService {
 }
 
 object Digipost {
-  def apply(userId: Long, createSignature: String => String) = new Object with Api {
+  def apply(userId: Long, createSignature: String => String) = new Object with Api with DispatchHttpService {
     lazy override val user = userId
     lazy override val sign = createSignature
   }
