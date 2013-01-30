@@ -1,15 +1,18 @@
 package no.froden.scalapost
 
 import dispatch.Http.promise
+import org.slf4j.LoggerFactory
 
-object TestClient extends App {
+object TestClient extends App with DispatchHttpService {
+
+  val log = LoggerFactory.getLogger(getClass)
 
   val logAndExit = (error: Throwable) => {
-    println(error)
+    log.error(error.toString)
     sys.exit(1)
   }
 
-  val sign = Crypto.sign(getClass.getResourceAsStream("/certificate.p12"), "Qwer1234!").fold(logAndExit, identity)
+  val sign = Crypto.sign(getClass.getResourceAsStream("/5.p12"), "Qwer1234").fold(logAndExit, identity)
 
   val api = Digipost(5, sign)
 
@@ -21,7 +24,7 @@ object TestClient extends App {
     finalDelivery <- api.post(contentLink, IO.classpathResource("About Stacks.pdf")).right
   } yield finalDelivery
 
-  println(res())
+  log.info(res().toString)
 
   api.shutdown()
 }
