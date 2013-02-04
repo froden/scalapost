@@ -8,6 +8,8 @@ import java.security.MessageDigest
 import org.bouncycastle.util.encoders.Base64
 import java.io.StringWriter
 import dispatch.Http._
+import scalaz._
+import Scalaz._
 
 case class ApiError(status: Int, body: Elem) extends Exception("Status=%s, %s".format(status, body))
 
@@ -52,41 +54,45 @@ object ContentMD5 {
   def apply(data: Array[Byte]): String = new String(Base64.encode(md5Digester.digest(data)), "utf-8")
 }
 
+object PromiseMonad extends Monad[Promise]{
+  def point[A](a: => A): Promise[A] = Http.promise(a)
+
+  def bind[A, B](fa: Promise[A])(f: (A) => Promise[B]): Promise[B] = fa flatMap f
+}
+
 trait HttpService {
-  type Res = Promise[Either[String, Elem]]
-  def get(uri: String, headers: Map[String, String]): Res
-  def post(uri: String, headers: Map[String, String], body: String): Res
-  def post(uri: String, headers: Map[String, String], body: Array[Byte]): Res
+  type PromiseResponse[+A] = EitherT[Promise, String, A]
+  implicit def M = PromiseMonad
+
+  def get(uri: String, headers: Map[String, String]): PromiseResponse[Elem]
+  def post(uri: String, headers: Map[String, String], body: String): PromiseResponse[Elem]
+  def post(uri: String, headers: Map[String, String], body: Array[Byte]): PromiseResponse[Elem]
 }
 
 trait DispatchHttpService {
-  def get(uri: String, headers: Map[String, String]) = {
+  def get(uri: String, headers: Map[String, String]) = EitherT {
     val req = url(uri) <:< headers
-    val res = Http(req > toXml).either
-    res.left map (_.getMessage)
+    Http(req > toXml)
   }
 
-  def post(uri: String, headers: Map[String, String], body: String) = {
+  def post(uri: String, headers: Map[String, String], body: String) = EitherT {
     val req = url(uri).POST.setBody(body).setBodyEncoding("utf-8") <:< headers
-    val res = Http(req > toXml).either
-    res.left map (_.getMessage)
+    Http(req > toXml)
   }
 
-  def post(uri: String, headers: Map[String, String], body: Array[Byte]) = {
+  def post(uri: String, headers: Map[String, String], body: Array[Byte]) = EitherT {
     val req = url(uri).POST.setBody(body) <:< headers
-    val res = Http(req > toXml).either
-    res.left map (_.getMessage)
+    Http(req > toXml)
   }
 
-  val toXml: Res => Elem = res =>
+  val toXml: Res => String \/ Elem = res =>
     if (res.getStatusCode / 100 == 2)
-      as.xml.Elem(res)
+      \/.right(as.xml.Elem(res))
     else
-      throw ApiError(res.getStatusCode, if (res.hasResponseBody) as.xml.Elem(res) else <error />)
+      \/.left(res.getStatusCode + ": " + res.getStatusText + ": " + res.getResponseBody)
 }
 
 trait Api extends HttpService {
-
   import ScalaPost._
 
 //  val baseUrl = "http://localhost:8282"
@@ -96,22 +102,22 @@ trait Api extends HttpService {
   val sign: String => String
 
   def createMessage(msg: Elem) = for {
-    entry <- get().right
-    createLink <- promise(getLink("create_message", entry)).right
-    delivery <- post(createLink, msg).right
+    entry <- get()
+    createLink <- EitherT(promise(getLink("create_message", entry)))
+    delivery <- post(createLink, msg)
   } yield delivery
 
   def deliverMessage(uri: String, content: Array[Byte]) = for {
-    finalDelivery <- post(uri, content).right
+    finalDelivery <- post(uri, content)
   } yield finalDelivery
 
   def sendMessage(msg: Elem, content: Array[Byte]) = for {
-    delivery <- createMessage(msg).right
-    contentLink <- promise(getLink("add_content_and_send", delivery)).right
-    finalDelivery <- deliverMessage(contentLink, content).right
+    delivery <- createMessage(msg)
+    contentLink <- EitherT(promise(getLink("add_content_and_send", delivery)))
+    finalDelivery <- deliverMessage(contentLink, content)
   } yield finalDelivery
 
-  def get(uri: String = baseUrl): Res = {
+  def get(uri: String = baseUrl): PromiseResponse[Elem] = {
     val path = extractPath(uri)
     val date = formatDate(new Date())
     val signature = sign(stringToSign("get", path, date, user))
@@ -126,7 +132,7 @@ trait Api extends HttpService {
     }
   }
 
-  def post(uri: String, bytes: Array[Byte]): Promise[Either[String, Elem]] = {
+  def post(uri: String, bytes: Array[Byte]): PromiseResponse[Elem] = {
     val checksum = ContentMD5(bytes)
     val path = extractPath(uri)
     val date = formatDate(new Date())
@@ -136,7 +142,7 @@ trait Api extends HttpService {
     post(uri, reqHeaders, bytes)
   }
 
-  def post(uri: String, x: xml.Node): Promise[Either[String, Elem]] = {
+  def post(uri: String, x: xml.Node): PromiseResponse[Elem] = {
     val body = x.toXmlString()
     val checksum = ContentMD5(body)
     val path = extractPath(uri)
@@ -152,13 +158,14 @@ trait Api extends HttpService {
       case Links(links @ _*) => links.find(_._1 == rel).map(_._2)
       case _ => None
     }
-    link.toRight(rel + " link not found")
+    link.toRightDisjunction(rel + " link not found")
   }
 
   def shutdown() = Http.shutdown()
 }
 
 object Digipost {
+
   def apply(userId: Long, createSignature: String => String) = new Object with Api with DispatchHttpService {
     lazy override val user = userId
     lazy override val sign = createSignature

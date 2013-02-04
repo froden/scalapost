@@ -3,6 +3,7 @@ package no.froden.scalapost
 import org.slf4j.LoggerFactory
 
 object TestClient2 extends App {
+  implicit val M = PromiseMonad
 
   val log = LoggerFactory.getLogger(getClass)
 
@@ -23,7 +24,7 @@ object TestClient2 extends App {
     msg2 <- api.createMessage(Message("Test2", DigipostAddress("sindre.bartnes.nordbø#5B53")))
     msg3 <- api.createMessage(Message("Test2", DigipostAddress("sindre.bartnes.nordbø#5B53")))
   } yield msg1 :: msg2 :: msg3 :: Nil
-  log.info(result().toString)
+  log.info(result.run().toString)
 
   log.info((System.currentTimeMillis() - time).toString)
 

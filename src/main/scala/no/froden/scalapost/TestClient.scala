@@ -17,7 +17,7 @@ object TestClient extends App {
 
   val res = api.createMessage(Message("Test1", DigipostAddress("sindre.bartnes.nordbø#5B53")))
 
-  log.info(res().toString)
+  log.info(res.run().toString)
 
   api.shutdown()
 }
