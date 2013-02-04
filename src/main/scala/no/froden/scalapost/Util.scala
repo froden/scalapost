@@ -13,7 +13,7 @@ import Scalaz._
 
 case class ApiError(status: Int, body: Elem) extends Exception("Status=%s, %s".format(status, body))
 
-object ScalaPost {
+object Util {
 
   def formatDate(date: Date) = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US).format(date)
 
@@ -39,12 +39,6 @@ object ScalaPost {
     val path = RawUri(uri).path.getOrElse("/")
     if (path.isEmpty) "/" else path
   }
-
-  def request(method: String, userId: Long, uri: String, sign: String => String, date: String, contentMD5: String = "") = {
-    val path = extractPath(uri)
-    val signature = sign(stringToSign(method, path, date, userId, contentMD5))
-    url(uri) <:< headers(date, userId, signature)
-  }
 }
 
 object ContentMD5 {
@@ -67,6 +61,8 @@ trait HttpService {
   def get(uri: String, headers: Map[String, String]): PromiseResponse[Elem]
   def post(uri: String, headers: Map[String, String], body: String): PromiseResponse[Elem]
   def post(uri: String, headers: Map[String, String], body: Array[Byte]): PromiseResponse[Elem]
+
+  def wrap[A](value: String \/ A): PromiseResponse[A] = EitherT(M.point(value))
 }
 
 trait DispatchHttpService {
@@ -93,7 +89,7 @@ trait DispatchHttpService {
 }
 
 trait Api extends HttpService {
-  import ScalaPost._
+  import Util._
 
 //  val baseUrl = "http://localhost:8282"
   val baseUrl = "https://qa.api.digipost.no"
@@ -103,17 +99,17 @@ trait Api extends HttpService {
 
   def createMessage(msg: Elem) = for {
     entry <- get()
-    createLink <- EitherT(promise(getLink("create_message", entry)))
-    delivery <- post(createLink, msg)
+    createLink <- wrap(getLink("create_message", entry))
+    delivery <- postXml(createLink, msg)
   } yield delivery
 
   def deliverMessage(uri: String, content: Array[Byte]) = for {
-    finalDelivery <- post(uri, content)
+    finalDelivery <- postBytes(uri, content)
   } yield finalDelivery
 
   def sendMessage(msg: Elem, content: Array[Byte]) = for {
     delivery <- createMessage(msg)
-    contentLink <- EitherT(promise(getLink("add_content_and_send", delivery)))
+    contentLink <- wrap(getLink("add_content_and_send", delivery))
     finalDelivery <- deliverMessage(contentLink, content)
   } yield finalDelivery
 
@@ -130,27 +126,22 @@ trait Api extends HttpService {
       XML.write(writer, x, "UTF-8", true, null)
       writer.toString
     }
+
+    def toXmlBytes(): Array[Byte] = toXmlString().getBytes("utf-8")
   }
 
-  def post(uri: String, bytes: Array[Byte]): PromiseResponse[Elem] = {
+  def postBytes(uri: String, bytes: Array[Byte], contentType: String = "application/pdf"): PromiseResponse[Elem] = {
     val checksum = ContentMD5(bytes)
     val path = extractPath(uri)
     val date = formatDate(new Date())
     val signature = sign(stringToSign("post", path, date, user, checksum))
     val reqHeaders = headers(date, user, signature) ++
-      Map("Content-MD5" -> checksum, "Content-Type" -> "application/pdf")
+      Map("Content-MD5" -> checksum, "Content-Type" -> contentType)
     post(uri, reqHeaders, bytes)
   }
 
-  def post(uri: String, x: xml.Node): PromiseResponse[Elem] = {
-    val body = x.toXmlString()
-    val checksum = ContentMD5(body)
-    val path = extractPath(uri)
-    val date = formatDate(new Date())
-    val signature = sign(stringToSign("post", path, date, user, checksum))
-    val reqHeaders = headers(date, user, signature) ++
-      Map("Content-MD5" -> checksum, "Content-Type" -> "application/vnd.digipost-v3+xml")
-    post(uri, reqHeaders, body)
+  def postXml(uri: String, x: xml.Node): PromiseResponse[Elem] = {
+    postBytes(uri, x.toXmlBytes(), "application/vnd.digipost-v3+xml")
   }
 
   def getLink(rel: String, elem: Elem) = {
