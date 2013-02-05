@@ -2,7 +2,6 @@ package no.froden.scalapost
 
 import xml.Elem
 
-
 object Message {
   def apply(subject: String, recipient: Elem) = {
     <message xmlns="http://api.digipost.no/schema/v3">
@@ -20,9 +19,19 @@ object Message {
   }
 }
 
+object MessageDelivery {
+
+}
+
 object DigipostAddress {
   def apply(digipostAddress: String) = {
     <digipost-address>{digipostAddress}</digipost-address>
+  }
+}
+
+object PersonalIdentificationNumber {
+  def apply(pin: String) = {
+    <personal-identification-number>{pin}</personal-identification-number>
   }
 }
 

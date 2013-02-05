@@ -2,7 +2,7 @@ package no.froden.scalapost
 
 import concurrent.Future
 import concurrent.ExecutionContext.Implicits.global
-import no.froden.scalapost.Frode2.{DispatchService}
+import no.froden.scalapost.Frode2.DispatchService
 import dispatch._
 import scalaz._
 import Scalaz._

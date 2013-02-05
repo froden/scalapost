@@ -1,13 +1,11 @@
 package no.froden.scalapost
 
-import dispatch._
 import xml.{XML, Elem}
 import java.util.{Locale, Date}
 import java.text.SimpleDateFormat
-import java.security.MessageDigest
-import org.bouncycastle.util.encoders.Base64
+import dispatch.{Http, RawUri}
 import java.io.StringWriter
-import dispatch.Http._
+
 import scalaz._
 import Scalaz._
 
@@ -41,77 +39,14 @@ object Util {
   }
 }
 
-object ContentMD5 {
-  lazy val md5Digester = MessageDigest.getInstance("MD5")
-
-  def apply(data: String): String = ContentMD5(data.getBytes("utf-8"))
-  def apply(data: Array[Byte]): String = new String(Base64.encode(md5Digester.digest(data)), "utf-8")
-}
-
-object PromiseMonad extends Monad[Promise]{
-  def point[A](a: => A): Promise[A] = Http.promise(a)
-
-  def bind[A, B](fa: Promise[A])(f: (A) => Promise[B]): Promise[B] = fa flatMap f
-}
-
-trait HttpService {
-  type PromiseResponse[+A] = EitherT[Promise, String, A]
-  implicit def M = PromiseMonad
-
-  def get(uri: String, headers: Map[String, String]): PromiseResponse[Elem]
-  def post(uri: String, headers: Map[String, String], body: String): PromiseResponse[Elem]
-  def post(uri: String, headers: Map[String, String], body: Array[Byte]): PromiseResponse[Elem]
-
-  def wrap[A](value: String \/ A): PromiseResponse[A] = EitherT(M.point(value))
-}
-
-trait DispatchHttpService {
-  def get(uri: String, headers: Map[String, String]) = EitherT {
-    val req = url(uri) <:< headers
-    Http(req > toXml)
-  }
-
-  def post(uri: String, headers: Map[String, String], body: String) = EitherT {
-    val req = url(uri).POST.setBody(body).setBodyEncoding("utf-8") <:< headers
-    Http(req > toXml)
-  }
-
-  def post(uri: String, headers: Map[String, String], body: Array[Byte]) = EitherT {
-    val req = url(uri).POST.setBody(body) <:< headers
-    Http(req > toXml)
-  }
-
-  val toXml: Res => String \/ Elem = res =>
-    if (res.getStatusCode / 100 == 2)
-      \/.right(as.xml.Elem(res))
-    else
-      \/.left(res.getStatusCode + ": " + res.getStatusText + ": " + res.getResponseBody)
-}
-
 trait Api extends HttpService {
   import Util._
 
-//  val baseUrl = "http://localhost:8282"
+  //  val baseUrl = "http://localhost:8282"
   val baseUrl = "https://qa.api.digipost.no"
 
   val user: Long
   val sign: String => String
-
-  def createMessage(msg: Elem) = for {
-    entry <- get()
-    createLink <- wrap(getLink("create_message", entry))
-    delivery <- postXml(createLink, msg)
-  } yield delivery
-
-  def deliverMessage(uri: String, content: Array[Byte]) = for {
-    finalDelivery <- postBytes(uri, content)
-  } yield finalDelivery
-
-  def sendMessage(msg: Elem, content: Array[Byte]) = for {
-    delivery <- createMessage(msg)
-    contentLink <- wrap(getLink("add_content_and_send", delivery))
-    finalDelivery <- deliverMessage(contentLink, content)
-  } yield finalDelivery
 
   def get(uri: String = baseUrl): PromiseResponse[Elem] = {
     val path = extractPath(uri)
@@ -153,12 +88,4 @@ trait Api extends HttpService {
   }
 
   def shutdown() = Http.shutdown()
-}
-
-object Digipost {
-
-  def apply(userId: Long, createSignature: String => String) = new Object with Api with DispatchHttpService {
-    lazy override val user = userId
-    lazy override val sign = createSignature
-  }
 }
