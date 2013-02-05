@@ -11,37 +11,7 @@ import Scalaz._
 
 case class ApiError(status: Int, body: Elem) extends Exception("Status=%s, %s".format(status, body))
 
-object Util {
-
-  def formatDate(date: Date) = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US).format(date)
-
-  def stringToSign(method: String, path: String, date: String, userId: Long, contentMD5: String = "") = {
-    val str = new StringBuilder()
-    str ++= method.toUpperCase ++= "\n"
-    str ++= path ++= "\n"
-    if (!contentMD5.isEmpty) str.append("content-md5: ").append(contentMD5 + "\n")
-    str.append("date: ").append(date + "\n")
-    str.append("x-digipost-userid: " ).append(userId.toString + "\n")
-    str.append("\n")
-    str.toString()
-  }
-
-  def headers(date: String, userId: Long, signature: String) = Map(
-    "Accept" -> "application/vnd.digipost-v3+xml",
-    "Date" -> date,
-    "X-Digipost-UserId" -> userId.toString,
-    "X-Digipost-Signature" -> signature
-  )
-
-  def extractPath(uri: String) = {
-    val path = RawUri(uri).path.getOrElse("/")
-    if (path.isEmpty) "/" else path
-  }
-}
-
 trait Api extends HttpService {
-  import Util._
-
   //  val baseUrl = "http://localhost:8282"
   val baseUrl = "https://qa.api.digipost.no"
 
@@ -85,6 +55,31 @@ trait Api extends HttpService {
       case _ => None
     }
     link.toRightDisjunction(rel + " link not found")
+  }
+
+  def formatDate(date: Date) = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US).format(date)
+
+  def stringToSign(method: String, path: String, date: String, userId: Long, contentMD5: String = "") = {
+    val str = new StringBuilder()
+    str ++= method.toUpperCase ++= "\n"
+    str ++= path ++= "\n"
+    if (!contentMD5.isEmpty) str.append("content-md5: ").append(contentMD5 + "\n")
+    str.append("date: ").append(date + "\n")
+    str.append("x-digipost-userid: " ).append(userId.toString + "\n")
+    str.append("\n")
+    str.toString()
+  }
+
+  def headers(date: String, userId: Long, signature: String) = Map(
+    "Accept" -> "application/vnd.digipost-v3+xml",
+    "Date" -> date,
+    "X-Digipost-UserId" -> userId.toString,
+    "X-Digipost-Signature" -> signature
+  )
+
+  def extractPath(uri: String) = {
+    val path = RawUri(uri).path.getOrElse("/")
+    if (path.isEmpty) "/" else path
   }
 
   def shutdown() = Http.shutdown()
