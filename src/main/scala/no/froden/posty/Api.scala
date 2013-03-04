@@ -23,7 +23,7 @@ trait Api[M[+ _]] {
   }
 
   def postXml(uri: String, x: xml.Node): M[Elem] = {
-    postBytes(uri, x.toXmlBytes(), "application/vnd.digipost-v3+xml")
+    postBytes(uri, x.toXmlBytes, "application/vnd.digipost-v3+xml")
   }
 
   def getXml(uri: String = baseUrl): M[Elem] = {
@@ -72,15 +72,15 @@ trait Api[M[+ _]] {
   def formatDate(date: Date) = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US).format(date)
 
   implicit class XmlWriter(x: xml.Node) {
-    def toXmlString(): String = {
+    def toXmlString: String = {
       val writer = new StringWriter()
-      XML.write(writer, x, "UTF-8", true, null)
+      XML.write(writer, x, "UTF-8", xmlDecl = true, doctype = null)
       writer.toString
     }
 
-    def toXmlBytes(): Array[Byte] = toXmlString().getBytes("utf-8")
+    def toXmlBytes: Array[Byte] = toXmlString.getBytes("utf-8")
   }
 
-  def shutdown() = Http.shutdown()
+  def shutdown() {Http.shutdown()}
 }
 

@@ -3,7 +3,7 @@ package no.froden.posty
 import scalaz.{Monad, \/}
 import xml.Elem
 
-object Tester {
+object DigipostServiceTest {
 
   type TestResult[+A] = String \/ A
 
