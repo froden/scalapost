@@ -1,6 +1,5 @@
 package no.froden.posty
 
-import java.io.BufferedInputStream
 
 object IO {
   def classpathResource(name: String) = {

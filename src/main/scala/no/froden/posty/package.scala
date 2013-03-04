@@ -1,6 +1,6 @@
 package no.froden
 
-import scalaz.{Monad, EitherT, \/}
+import scalaz.{EitherT, \/}
 import concurrent.Future
 
 package object posty {
