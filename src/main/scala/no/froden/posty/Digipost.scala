@@ -4,7 +4,7 @@ import xml.Elem
 import scalaz._
 import Scalaz._
 
-trait Digipost[M[+ _]] extends Api[M] {
+trait Digipost[M[+_]] extends Api[M] {
   self: HttpService[M] =>
 
   def createMessage(msg: Elem): M[Elem] =
@@ -14,14 +14,16 @@ trait Digipost[M[+ _]] extends Api[M] {
       delivery <- postXml(createLink, msg)
     } yield delivery
 
-  def deliverMessage(uri: String, content: Array[Byte]): M[Elem] = for {
-    finalDelivery <- postBytes(uri, content)
+  def deliverMessage(uri: String, content: Array[Byte], contentType: String): M[Elem] = for {
+    finalDelivery <- postBytes(uri, content, contentType)
   } yield finalDelivery
 
-  def sendMessage(msg: Elem, content: Array[Byte]) = for {
+  def sendPdfMessage(msg: Elem, pdf: Array[Byte]) = sendMessage(msg, pdf, "application/pdf")
+
+  def sendMessage(msg: Elem, content: Array[Byte], contentType: String): M[Elem] = for {
     delivery <- createMessage(msg)
     contentLink <- getLink("add_content_and_send", delivery)
-    finalDelivery <- deliverMessage(contentLink, content)
+    finalDelivery <- deliverMessage(contentLink, content, contentType)
   } yield finalDelivery
 
 }

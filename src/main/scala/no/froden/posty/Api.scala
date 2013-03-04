@@ -13,7 +13,7 @@ trait Api[M[+ _]] {
   val userId: Long
   val signature: String => String
 
-  def postBytes(uri: String, bytes: Array[Byte], contentType: String = "application/pdf"): M[Elem] = {
+  def postBytes(uri: String, bytes: Array[Byte], contentType: String): M[Elem] = {
     val checksum = ContentMD5(bytes)
     val path = extractPath(uri)
     val date = formatDate(new Date())
@@ -45,10 +45,10 @@ trait Api[M[+ _]] {
     val str = new StringBuilder()
     str ++= method.toUpperCase ++= "\n"
     str ++= path ++= "\n"
-    if (!contentMD5.isEmpty) str.append("content-md5: ").append(contentMD5 + "\n")
-    str.append("date: ").append(date + "\n")
-    str.append("x-digipost-userid: ").append(userId.toString + "\n")
-    str.append("\n")
+    if (!contentMD5.isEmpty) str ++= "content-md5: " ++= contentMD5 ++= "\n"
+    str ++= "date: " ++= date ++= "\n"
+    str ++= "x-digipost-userid: " ++= userId.toString ++= "\n"
+    str ++= "\n"
     str.toString()
   }
 
