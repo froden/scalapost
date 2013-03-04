@@ -5,7 +5,7 @@ import scalaz._
 import Scalaz._
 
 trait Digipost[M[+_]] extends Api[M] {
-  self: HttpService[M] =>
+  self: HttpService[M] with ErrorReporting[M] =>
 
   def createMessage(msg: Elem): M[Elem] =
     for {

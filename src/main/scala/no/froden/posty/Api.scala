@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat
 import java.io.StringWriter
 
 trait Api[M[+ _]] {
-  self: HttpService[M] =>
+  self: HttpService[M] with ErrorReporting[M] =>
   lazy val baseUrl = "http://qa.api.digipost.no"
 
   val userId: Long

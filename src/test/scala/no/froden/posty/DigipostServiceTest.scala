@@ -7,7 +7,7 @@ object DigipostServiceTest {
 
   type TestResult[+A] = String \/ A
 
-  class DigipostTestClient(response: Elem)(implicit val M: Monad[TestResult]) extends Digipost[TestResult] with HttpService[TestResult] {
+  class DigipostTestClient(response: Elem)(implicit val M: Monad[TestResult]) extends Digipost[TestResult] with HttpService[TestResult] with ErrorReporting[TestResult] {
     override lazy val userId = 100L
     override lazy val signature: String => String = identity
 
@@ -22,7 +22,7 @@ object DigipostServiceTest {
 
   def main(args: Array[String]) {
     val client = new DigipostTestClient(<xml>hei</xml>)
-    val delivery = client.createMessage(Message("msg:id", "Dette er en test", DigipostAddress("frode.nerbråten#000")))
+    val delivery = client.createMessage(Message("msg:id", "Dette er en test", DigipostAddress("frode.nerbråten#0000")))
     println(delivery)
   }
 }

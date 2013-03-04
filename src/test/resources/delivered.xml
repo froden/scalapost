@@ -1,8 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<links xmlns="http://api.digipost.no/schema/v3">
+    <link rel="https://api.digipost.no/relations/search" uri="https://api.digipost.no/recipients/search"
+          media-type="application/vnd.digipost-v3+xml"/>
+    <link rel="https://api.digipost.no/relations/autocomplete" uri="https://api.digipost.no/recipients/suggest"
+          media-type="application/vnd.digipost-v3+xml"/>
+    <link rel="https://api.digipost.no/relations/create_message" uri="https://api.digipost.no/messages"
+          media-type="application/vnd.digipost-v3+xml"/>
+    <link rel="https://api.digipost.no/relations/api_documentation" uri="https://api.digipost.no"
+          media-type="text/html"/>
+</links>
+
 <message-delivery xmlns="http://api.digipost.no/schema/v3">
-    <message-id>msg:2</message-id>
-    <delivery-method>DIGIPOST</delivery-method>
-    <status>DELIVERED</status>
-    <delivered-date>2013-03-04T10:40:05.839+01:00</delivered-date>
-    <link media-type="application/vnd.digipost-v3+xml" uri="https://api.digipost.no/messages/110988"
-          rel="https://api.digipost.no/relations/self"/>
+<message-id>msg:197</message-id>
+<delivery-method>DIGIPOST</delivery-method>
+<status>NOT_COMPLETE</status>
+<link rel="https://api.digipost.no/relations/self" uri="https://api.digipost.no/messages/109388"
+      media-type="application/vnd.digipost-v3+xml"/>
+<link rel="https://api.digipost.no/relations/add_content_and_send"
+      uri="https://api.digipost.no/messages/109388/completion" media-type="application/vnd.digipost-v3+xml"/>
+<link rel="https://api.digipost.no/relations/add_content" uri="https://api.digipost.no/messages/109388/content"
+      media-type="application/vnd.digipost-v3+xml"/>
+</message-delivery>
+
+<message-delivery xmlns="http://api.digipost.no/schema/v3">
+<message-id>msg:197</message-id>
+<delivery-method>DIGIPOST</delivery-method>
+<status>DELIVERED</status>
+<delivered-date>2013-03-04T11:31:53.346+01:00</delivered-date>
+<link rel="https://api.digipost.no/relations/self" uri="https://api.digipost.no/messages/109388"
+      media-type="application/vnd.digipost-v3+xml"/>
 </message-delivery>

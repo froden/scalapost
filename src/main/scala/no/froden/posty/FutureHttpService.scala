@@ -7,7 +7,7 @@ import xml.Elem
 import scala.concurrent.ExecutionContext.Implicits.global
 import no.froden.posty.Implicits._
 
-trait FutureHttpService extends HttpService[FutureResult] {
+trait FutureHttpService extends HttpService[FutureResult] with ErrorReporting[FutureResult] {
   def M = FutureResultMonad
 
   override def get(uri: String, headers: Map[String, String]) = {
