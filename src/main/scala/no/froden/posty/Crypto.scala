@@ -1,11 +1,9 @@
-package no.froden.scalapost
+package no.froden.posty
 
 import java.io.InputStream
 import java.security.{Security, KeyStore, PrivateKey, Signature}
 import java.security.interfaces.RSAPrivateCrtKey
-import scala.Predef.String
 import util.control.Exception._
-import java.lang.String
 import scala.Predef.String
 import org.bouncycastle.util.encoders.Base64
 import org.bouncycastle.jce.provider.BouncyCastleProvider

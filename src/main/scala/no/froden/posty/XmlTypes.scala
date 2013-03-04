@@ -1,4 +1,4 @@
-package no.froden.scalapost
+package no.froden.posty
 
 import xml.Elem
 

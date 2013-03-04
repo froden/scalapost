@@ -1,4 +1,4 @@
-package no.froden.scalapost
+package no.froden.posty
 
 import java.security.MessageDigest
 import org.bouncycastle.util.encoders.Base64
