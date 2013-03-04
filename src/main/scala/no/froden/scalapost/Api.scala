@@ -1,4 +1,4 @@
-package no.froden.posty
+package no.froden.scalapost
 
 import xml.{XML, Elem}
 import java.util.{Locale, Date}

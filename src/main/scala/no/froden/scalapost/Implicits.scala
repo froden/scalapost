@@ -1,4 +1,4 @@
-package no.froden.posty
+package no.froden.scalapost
 
 import scalaz.{\/, EitherT, Monad}
 import concurrent.Future

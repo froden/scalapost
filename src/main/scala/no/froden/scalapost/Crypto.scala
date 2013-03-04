@@ -1,4 +1,4 @@
-package no.froden.posty
+package no.froden.scalapost
 
 import java.io.InputStream
 import java.security.{Security, KeyStore, PrivateKey, Signature}
