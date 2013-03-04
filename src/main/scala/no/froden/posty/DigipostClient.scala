@@ -1,7 +1,6 @@
 package no.froden.posty
 
 import java.io.InputStream
-import util.{Failure, Success}
 
 class DigipostClient(val userId: Long, certificate: InputStream, passPhrase: String) extends Digipost[FutureResult] with FutureHttpService {
   override lazy val baseUrl = "https://api.digipost.no"
