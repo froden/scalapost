@@ -8,7 +8,7 @@ import java.io.StringWriter
 
 trait Api[M[+ _]] {
   self: HttpService[M] with ErrorReporting[M] =>
-  lazy val baseUrl = "http://qa.api.digipost.no"
+  lazy val baseUrl = "https://api.digipost.no"
 
   val userId: Long
   val signature: String => String
