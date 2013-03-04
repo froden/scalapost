@@ -6,12 +6,8 @@ object Message {
   def apply(messageId: String, subject: String, recipient: Elem) = {
     <message xmlns="http://api.digipost.no/schema/v3">
       <message-id>{messageId}</message-id>
-      <subject>
-        {subject}
-      </subject>
-      <recipient>
-        {recipient}
-      </recipient>
+      <subject>{subject}</subject>
+      <recipient>{recipient}</recipient>
       <sms-notification/>
       <authentication-level>PASSWORD</authentication-level>
       <sensitivity-level>NORMAL</sensitivity-level>
