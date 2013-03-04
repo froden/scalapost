@@ -3,9 +3,9 @@ package no.froden.posty
 import xml.Elem
 
 object Message {
-  def apply(subject: String, recipient: Elem) = {
+  def apply(messageId: String, subject: String, recipient: Elem) = {
     <message xmlns="http://api.digipost.no/schema/v3">
-      <message-id>{(math.random*1000).toString}</message-id>
+      <message-id>{messageId}</message-id>
       <subject>
         {subject}
       </subject>

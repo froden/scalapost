@@ -1,6 +1,6 @@
 package no.froden
 
-import scalaz.{EitherT, \/}
+import scalaz.{Monad, EitherT, \/}
 import concurrent.Future
 
 package object posty {
@@ -8,5 +8,4 @@ package object posty {
   type Result[+A] = String \/ A
 
   type FutureResult[+B] = EitherT[Future, String, B]
-
 }
