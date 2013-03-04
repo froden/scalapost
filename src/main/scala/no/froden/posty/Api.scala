@@ -5,31 +5,13 @@ import java.util.{Locale, Date}
 import dispatch.{Http, RawUri}
 import java.text.SimpleDateFormat
 import java.io.StringWriter
-import scalaz._
-import Scalaz._
 
-trait Api[M[+_]] { self: HttpService[M] =>
+trait Api[M[+ _]] {
+  self: HttpService[M] =>
   lazy val baseUrl = "http://qa.api.digipost.no"
 
   val userId: Long
   val signature: String => String
-
-  def createMessage(msg: Elem): M[Elem] =
-    for {
-      entry <- getXml()
-      createLink <- getLink("create_message", entry)
-      delivery <- postXml(createLink, msg)
-    } yield delivery
-
-  //  def deliverMessage(uri: String, content: Array[Byte]) = for {
-  //    finalDelivery <- postBytes(uri, content)
-  //  } yield finalDelivery
-  //
-  //  def sendMessage(msg: Elem, content: Array[Byte]) = for {
-  //    delivery <- createMessage(msg)
-  //    contentLink <- wrap(getLink("add_content_and_send", delivery))
-  //    finalDelivery <- deliverMessage(contentLink, content)
-  //  } yield finalDelivery
 
   def postBytes(uri: String, bytes: Array[Byte], contentType: String = "application/pdf"): M[Elem] = {
     val checksum = ContentMD5(bytes)
@@ -53,7 +35,7 @@ trait Api[M[+_]] { self: HttpService[M] =>
 
   def getLink(rel: String, elem: Elem): M[String] = {
     val linkOpt = elem match {
-      case Links(links @ _*) => links.find(_._1 == rel).map(_._2)
+      case Links(links@_*) => links.find(_._1 == rel).map(_._2)
       case _ => None
     }
     linkOpt.fold[M[String]](failure("Link not found: rel=" + rel))(link => success(link))
@@ -65,12 +47,12 @@ trait Api[M[+_]] { self: HttpService[M] =>
     str ++= path ++= "\n"
     if (!contentMD5.isEmpty) str.append("content-md5: ").append(contentMD5 + "\n")
     str.append("date: ").append(date + "\n")
-    str.append("x-digipost-userid: " ).append(userId.toString + "\n")
+    str.append("x-digipost-userid: ").append(userId.toString + "\n")
     str.append("\n")
     str.toString()
   }
 
-  def postHeaders(checksum: String, contentType: String) = Map (
+  def postHeaders(checksum: String, contentType: String) = Map(
     "Content-MD5" -> checksum,
     "Content-Type" -> contentType
   )

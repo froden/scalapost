@@ -7,7 +7,7 @@ object Tester {
 
   type TestResult[+A] = String \/ A
 
-  class DigipostTestClient(response: Elem)(implicit val M: Monad[TestResult]) extends Api[TestResult] with HttpService[TestResult] {
+  class DigipostTestClient(response: Elem)(implicit val M: Monad[TestResult]) extends Digipost[TestResult] with HttpService[TestResult] {
     override lazy val userId = 100L
     override lazy val signature: String => String = identity
 

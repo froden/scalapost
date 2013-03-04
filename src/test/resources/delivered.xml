@@ -1,0 +1,8 @@
+<message-delivery xmlns="http://api.digipost.no/schema/v3">
+    <message-id>msg:2</message-id>
+    <delivery-method>DIGIPOST</delivery-method>
+    <status>DELIVERED</status>
+    <delivered-date>2013-03-04T10:40:05.839+01:00</delivered-date>
+    <link media-type="application/vnd.digipost-v3+xml" uri="https://api.digipost.no/messages/110988"
+          rel="https://api.digipost.no/relations/self"/>
+</message-delivery>
