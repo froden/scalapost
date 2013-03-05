@@ -22,8 +22,8 @@ trait Api[M[+ _]] {
     post(uri, reqHeaders, bytes)
   }
 
-  def postXml(uri: String, x: xml.Node): M[Elem] = {
-    postBytes(uri, x.toXmlBytes, "application/vnd.digipost-v3+xml")
+  def postMessage(uri: String, msg: Message): M[Elem] = {
+    postBytes(uri, msg.toXml.toXmlBytes, "application/vnd.digipost-v3+xml")
   }
 
   def getXml(uri: String = baseUrl): M[Elem] = {

@@ -2,8 +2,8 @@ package no.froden.scalapost
 
 import xml.Elem
 
-object Message {
-  def apply(messageId: String, subject: String, recipient: Elem) = {
+case class Message(messageId: String, subject:String, recipient: Recipient) {
+  def toXml =
     <message xmlns="http://api.digipost.no/schema/v3">
       <message-id>{messageId}</message-id>
       <subject>{subject}</subject>
@@ -12,23 +12,19 @@ object Message {
       <authentication-level>PASSWORD</authentication-level>
       <sensitivity-level>NORMAL</sensitivity-level>
     </message>
-  }
 }
 
-object MessageDelivery {
+case class MessageDelivery(xml: Elem)
 
+trait Recipient
+
+case class DigipostAddress(digipostAddress: String) extends Recipient {
+ def toXml = <digipost-address>{digipostAddress}</digipost-address>
 }
 
-object DigipostAddress {
-  def apply(digipostAddress: String) = {
-    <digipost-address>{digipostAddress}</digipost-address>
-  }
-}
+case class PersonalIdentificationNumber(pin: String) extends Recipient {
+  def toXml = <personal-identification-number>{pin}</personal-identification-number>
 
-object PersonalIdentificationNumber {
-  def apply(pin: String) = {
-    <personal-identification-number>{pin}</personal-identification-number>
-  }
 }
 
 object Links {

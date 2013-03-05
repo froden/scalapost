@@ -9,7 +9,7 @@ object Client {
 
   def main(args: Array[String]) {
     val cert = getClass.getResourceAsStream("/hackaton7-test.p12")
-    val client = new DigipostClient(179079L, cert, "Qwer1234!")
+    val client = new ScalazDigipostClient(179079L, cert, "Qwer1234!")
 
     val fres = client.sendPdfMessage(
       Message("msg:" + Random.nextInt(1000), "Scalapost test", DigipostAddress("frode.nerbråten#0000")),
