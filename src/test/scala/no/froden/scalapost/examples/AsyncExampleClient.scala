@@ -7,15 +7,15 @@ import util.Random
 import no.froden.scalapost.{DigipostAddress, Message, AsyncDigipostClient}
 import no.froden.scalapost.internal.IO
 
-object AsyncTestClient {
+object AsyncExampleClient {
 
    def main(args: Array[String]) {
-     val cert = getClass.getResourceAsStream("/hackaton7-test.p12")
-     val client = new AsyncDigipostClient(179079L, cert, "Qwer1234!")
+     val cert = getClass.getResourceAsStream("/certificate.p12")
+     val client = new AsyncDigipostClient(100L, cert, "password")
 
      val fres = client.sendPdfMessage(
-       Message("msg:" + Random.nextInt(1000), "Scalapost test", DigipostAddress("frode.nerbråten#0000")),
-       IO.classpathResource("/About Stacks.pdf"))
+       Message("msg1", "Scalapost test", DigipostAddress("test.testsson#0000")),
+       IO.classpathResource("/content.pdf"))
      val res = Await.result(fres, duration.Duration.Inf)
      println(res)
    }
