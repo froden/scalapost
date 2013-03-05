@@ -1,10 +1,11 @@
-package no.froden.scalapost
+package no.froden.scalapost.examples
 
 import concurrent.{duration, Await}
-import internal.IO
 import scala.Predef._
 import scala.util
 import util.Random
+import no.froden.scalapost.{DigipostAddress, Message, ScalazDigipostClient}
+import no.froden.scalapost.internal.IO
 
 object ScalazTestClient {
 

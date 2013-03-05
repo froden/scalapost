@@ -1,9 +1,10 @@
-package no.froden.scalapost
+package no.froden.scalapost.examples
 
-import internal.IO
 import scala.Predef._
 import scala.util
 import util.Random
+import no.froden.scalapost.{DigipostAddress, Message, SimpleDigipostClient}
+import no.froden.scalapost.internal.IO
 
 object SimpleTestClient {
 
