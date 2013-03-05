@@ -1,4 +1,4 @@
-package no.froden.scalapost
+package no.froden.scalapost.internal
 
 import scalaz.Monad
 

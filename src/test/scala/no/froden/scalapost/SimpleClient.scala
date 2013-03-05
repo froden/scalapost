@@ -1,5 +1,6 @@
 package no.froden.scalapost
 
+import internal.IO
 import scala.Predef._
 import scala.util
 import util.Random

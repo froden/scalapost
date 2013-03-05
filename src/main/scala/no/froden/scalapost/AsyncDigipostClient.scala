@@ -1,8 +1,9 @@
 package no.froden.scalapost
 
+import internal._
 import java.io.InputStream
 import concurrent.Future
-import no.froden.scalapost.Implicits.FutureMonad
+import Implicits.FutureMonad
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class AsyncDigipostClient(val userId: Long, certificate: InputStream, passPhrase: String)

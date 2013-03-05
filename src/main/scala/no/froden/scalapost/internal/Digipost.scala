@@ -1,7 +1,8 @@
-package no.froden.scalapost
+package no.froden.scalapost.internal
 
 import scalaz._
 import Scalaz._
+import no.froden.scalapost.{MessageDelivery, Message}
 
 trait Digipost[M[+_]] extends Api[M] {
   self: HttpService[M] with ErrorReporting[M] =>

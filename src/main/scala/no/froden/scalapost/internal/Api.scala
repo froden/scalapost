@@ -1,10 +1,12 @@
-package no.froden.scalapost
+package no.froden.scalapost.internal
 
 import xml.{XML, Elem}
 import java.util.{Locale, Date}
 import dispatch.{Http, RawUri}
 import java.text.SimpleDateFormat
 import java.io.StringWriter
+import no.froden.scalapost._
+import no.froden.scalapost.Message
 
 trait Api[M[+ _]] {
   self: HttpService[M] with ErrorReporting[M] =>

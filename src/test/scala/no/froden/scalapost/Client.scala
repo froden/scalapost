@@ -1,6 +1,7 @@
 package no.froden.scalapost
 
 import concurrent.{duration, Await}
+import internal.IO
 import scala.Predef._
 import scala.util
 import util.Random

@@ -1,5 +1,6 @@
 package no.froden.scalapost
 
+import internal.{Digipost, ErrorReporting, HttpService}
 import scalaz.{Monad, \/}
 import xml.Elem
 

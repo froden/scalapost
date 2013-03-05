@@ -1,11 +1,12 @@
-package no.froden.scalapost
+package no.froden.scalapost.internal
 
 import scalaz._
 import Scalaz._
 import concurrent.Future
 import xml.Elem
 import scala.concurrent.ExecutionContext.Implicits.global
-import no.froden.scalapost.Implicits._
+import no.froden.scalapost._
+import Implicits._
 
 trait FutureHttpService extends GenericHttpService[FutureResult] with ErrorReporting[FutureResult] {
   def M = FutureResultMonad

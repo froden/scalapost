@@ -1,5 +1,6 @@
 package no.froden.scalapost
 
+import internal.{Digipost, GenericHttpService, Crypto, ErrorReporting}
 import java.io.InputStream
 import scalaz._
 import Scalaz._

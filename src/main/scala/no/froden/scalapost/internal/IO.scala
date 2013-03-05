@@ -1,5 +1,4 @@
-package no.froden.scalapost
-
+package no.froden.scalapost.internal
 
 object IO {
   def classpathResource(name: String) = {

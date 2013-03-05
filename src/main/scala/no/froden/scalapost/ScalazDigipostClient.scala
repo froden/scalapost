@@ -1,5 +1,6 @@
 package no.froden.scalapost
 
+import internal.{Digipost, Crypto, FutureHttpService}
 import java.io.InputStream
 
 class ScalazDigipostClient(val userId: Long, certificate: InputStream, passPhrase: String) extends Digipost[FutureResult] with FutureHttpService {
