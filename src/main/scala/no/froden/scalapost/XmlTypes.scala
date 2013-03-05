@@ -1,13 +1,13 @@
 package no.froden.scalapost
 
-import xml.Elem
+import xml.{NodeSeq, Elem}
 
 case class Message(messageId: String, subject:String, recipient: Recipient) {
   def toXml =
     <message xmlns="http://api.digipost.no/schema/v3">
       <message-id>{messageId}</message-id>
       <subject>{subject}</subject>
-      <recipient>{recipient}</recipient>
+      <recipient>{recipient.toXml}</recipient>
       <sms-notification/>
       <authentication-level>PASSWORD</authentication-level>
       <sensitivity-level>NORMAL</sensitivity-level>
@@ -16,7 +16,9 @@ case class Message(messageId: String, subject:String, recipient: Recipient) {
 
 case class MessageDelivery(xml: Elem)
 
-trait Recipient
+trait Recipient {
+  def toXml: NodeSeq
+}
 
 case class DigipostAddress(digipostAddress: String) extends Recipient {
  def toXml = <digipost-address>{digipostAddress}</digipost-address>

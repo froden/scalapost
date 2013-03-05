@@ -6,7 +6,7 @@ import scala.Predef._
 import scala.util
 import util.Random
 
-object Client {
+object ScalazTestClient {
 
   def main(args: Array[String]) {
     val cert = getClass.getResourceAsStream("/hackaton7-test.p12")
