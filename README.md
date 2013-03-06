@@ -34,8 +34,8 @@ println(res)
 #### Java synchronous
 ```java
 InputStream cert = JavaExampleClient.class.getResourceAsStream("/certificate.p12");
-SimpleDigipostClient client = new SimpleDigipostClient(1000L, cert, "password");
-Message message = new Message("msg:9", "Tester fra Java", new DigipostAddress("test.testsson#0000"));
+SimpleDigipostClient client = new SimpleDigipostClient(100L, cert, "password");
+Message message = new Message("msg1", "Scalapost for Java", new DigipostAddress("test.testsson#0000"));
 MessageDelivery res = client.sendPdfMessage(message, IO.classpathResource("/content.pdf"));
 System.out.println(res);
 ```
