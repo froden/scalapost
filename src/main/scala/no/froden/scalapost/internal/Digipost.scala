@@ -18,7 +18,7 @@ trait Digipost[M[+_]] extends Api[M] {
     finalDelivery <- postBytes(uri, content, contentType)
   } yield MessageDelivery(finalDelivery)
 
-  def sendPdfMessage(msg: Message, pdf: Array[Byte]) = sendMessage(msg, pdf, "application/pdf")
+  def sendPdfMessage(msg: Message, pdf: Array[Byte]): M[MessageDelivery] = sendMessage(msg, pdf, "application/pdf")
 
   def sendMessage(msg: Message, content: Array[Byte], contentType: String): M[MessageDelivery] = for {
     delivery <- createMessage(msg)

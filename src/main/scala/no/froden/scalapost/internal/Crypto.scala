@@ -6,16 +6,19 @@ import java.security.interfaces.RSAPrivateCrtKey
 import scala.Predef.String
 import org.bouncycastle.util.encoders.Base64
 import org.bouncycastle.jce.provider.BouncyCastleProvider
-import util.Try
+import util.{Failure, Try}
 
 object Crypto {
   def loadKeyFromP12(certificateStream: InputStream, password: String): Try[PrivateKey] =
-    Try {
-      val keyStore: KeyStore = KeyStore.getInstance("PKCS12")
-      keyStore.load(certificateStream, password.toCharArray)
-      val onlyKeyAlias: String = keyStore.aliases.nextElement
-      keyStore.getKey(onlyKeyAlias, password.toCharArray).asInstanceOf[RSAPrivateCrtKey]
-    }
+    if (certificateStream == null)
+      Failure(new IllegalArgumentException("certificate was null"))
+    else
+      Try {
+        val keyStore: KeyStore = KeyStore.getInstance("PKCS12")
+        keyStore.load(certificateStream, password.toCharArray)
+        val onlyKeyAlias: String = keyStore.aliases.nextElement
+        keyStore.getKey(onlyKeyAlias, password.toCharArray).asInstanceOf[RSAPrivateCrtKey]
+      }
 
   def initSignature(privateKey: PrivateKey) = Try {
     Security.addProvider(new BouncyCastleProvider())
