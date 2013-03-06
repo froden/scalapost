@@ -8,10 +8,9 @@ import Implicits.FutureMonad
 class AsyncDigipostClient(val userId: Long, certificate: InputStream, passPhrase: String)
   extends Digipost[Future] with GenericHttpService[Future] {
 
-  override lazy val baseUrl = "https://api.digipost.no"
-  val signature = Crypto.sign(certificate, passPhrase).get
+  override implicit def M = FutureMonad
 
-  implicit def M = FutureMonad
+  override val signature = Crypto.sign(certificate, passPhrase).get
 
   override def failure(a: ScalaPostError) = Future.failed(new ScalaPostException(a))
 }

@@ -15,8 +15,6 @@ trait GenericHttpService[M[+_]] extends HttpService[M] with ErrorReporting[M] {
   override def post(uri: String, headers: Map[String, String], body: Array[Byte]) =
     handleError(Http(url(uri).POST.setBody(body) <:< headers > handleResponse).either())
 
-  case class HttpException(err: ScalaPostError) extends Exception(err.toString)
-
   def handleError(res: Either[Throwable, Either[HttpError, Elem]]): M[Elem] = res match {
     case Right(res2) => res2 match {
       case Right(elem) => M.point(elem)
