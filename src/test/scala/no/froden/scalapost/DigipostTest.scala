@@ -10,7 +10,7 @@ import org.scalatest.matchers.ShouldMatchers
 @RunWith(classOf[JUnitRunner])
 class DigipostTest extends FunSuite with ShouldMatchers {
 
-  type TestResult[+A] = String \/ A
+  type TestResult[+A] = ScalaPostError \/ A
 
   class TestClient(implicit val M: Monad[TestResult])
     extends Digipost[TestResult] with HttpService[TestResult] with ErrorReporting[TestResult] {
@@ -49,9 +49,7 @@ class DigipostTest extends FunSuite with ShouldMatchers {
       </message-delivery>
     }
 
-    def success[A](a: A) = \/.right(a)
-
-    def failure(a: String) = \/.left(a)
+    override def failure(a: ScalaPostError) = \/.left(a)
   }
 
   test("Happy case") {

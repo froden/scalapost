@@ -1,20 +1,18 @@
 package no.froden.scalapost
 
-import internal.{Digipost, GenericHttpService, Crypto, ErrorReporting}
+import internal.{Digipost, GenericHttpService, Crypto}
 import java.io.InputStream
 import scalaz._
 import Scalaz._
 
 class SimpleDigipostClient(val userId: Long, certificate: InputStream, passPhrase: String)
-  extends Digipost[Id] with GenericHttpService[Id] with ErrorReporting[Id] {
+  extends Digipost[Id] with GenericHttpService[Id] {
 
   override lazy val baseUrl = "https://api.digipost.no"
   val signature = Crypto.sign(certificate, passPhrase).get
 
   implicit def M = id
 
-  def success[A](a: A): Scalaz.Id[A] = a
-
-  def failure(a: String): Scalaz.Id[Nothing] = throw new RuntimeException(a)
+  override def failure(a: ScalaPostError): Id[Nothing] = throw new ScalaPostException(a)
 }
 

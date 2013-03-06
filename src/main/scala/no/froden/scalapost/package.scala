@@ -5,7 +5,7 @@ import concurrent.Future
 
 package object scalapost {
 
-  type Result[+A] = String \/ A
+  type Result[+A] = ScalaPostError \/ A
 
-  type FutureResult[+B] = EitherT[Future, String, B]
+  type FutureResult[+B] = EitherT[Future, ScalaPostError, B]
 }

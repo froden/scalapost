@@ -26,8 +26,13 @@ case class DigipostAddress(digipostAddress: String) extends Recipient {
 
 case class PersonalIdentificationNumber(pin: String) extends Recipient {
   def toXml = <personal-identification-number>{pin}</personal-identification-number>
-
 }
+
+case class ScalaPostException(err: ScalaPostError) extends Exception(err.toString)
+
+trait ScalaPostError
+case class HttpError(httpStatus: Int, httpMsg: String, body: String = "") extends ScalaPostError
+case class ErrorMessage(msg: String) extends ScalaPostError
 
 object Links {
 

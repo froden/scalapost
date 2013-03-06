@@ -40,7 +40,7 @@ trait Api[M[+ _]] {
       case Links(links@_*) => links.find(_._1 == rel).map(_._2)
       case _ => None
     }
-    linkOpt.fold[M[String]](failure("Link not found: rel=" + rel))(link => success(link))
+    linkOpt.fold[M[String]](failure("Link not found: rel=" + rel))(link => M.point(link))
   }
 
   def stringToSign(method: String, path: String, date: String, userId: Long, contentMD5: String = "") = {
