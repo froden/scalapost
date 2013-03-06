@@ -14,5 +14,8 @@ class SimpleDigipostClient(val userId: Long, certificate: InputStream, passPhras
   implicit def M = id
 
   override def failure(a: ScalaPostError): Id[Nothing] = throw new ScalaPostException(a)
+
+  //For Java-API to play nicely
+  override def sendPdfMessage(msg: Message, pdf: Array[Byte]): MessageDelivery = super.sendPdfMessage(msg, pdf)
 }
 
