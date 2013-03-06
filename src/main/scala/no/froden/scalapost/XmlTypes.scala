@@ -33,6 +33,7 @@ case class ScalaPostException(err: ScalaPostError) extends Exception(err.toStrin
 trait ScalaPostError
 case class HttpError(httpStatus: Int, httpMsg: String, body: String = "") extends ScalaPostError
 case class ErrorMessage(msg: String) extends ScalaPostError
+case class ErrorThrowable(ex: Throwable) extends ScalaPostError
 
 object Links {
 
