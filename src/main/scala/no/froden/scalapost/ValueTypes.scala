@@ -14,7 +14,16 @@ case class Message(messageId: String, subject:String, recipient: Recipient) {
     </message>
 }
 
-case class MessageDelivery(xml: Elem)
+case class MessageDelivery(messageId: String, deliveryMethod: String, status: String)
+object MessageDelivery {
+  def apply(xml: Elem): MessageDelivery = {
+    val root = xml \\ "message-delivery"
+    val messageId = (root \ "message-id").text
+    val deliveryMethod = (root \ "delivery-method").text
+    val status = (root \ "status").text
+    MessageDelivery(messageId, deliveryMethod, status)
+  }
+}
 
 trait Recipient {
   def toXml: NodeSeq
