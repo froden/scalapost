@@ -19,7 +19,7 @@ val res = client.sendPdfMessage(
 println(res)
 ```
 
-#### Scala asynchronous (using scala.concurrent.Futures)
+#### Scala asynchronous (using scala.concurrent.Future)
 ```scala
 val cert = getClass.getResourceAsStream("/certificate.p12")
 val client = new AsyncDigipostClient(100L, cert, "password")
