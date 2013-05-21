@@ -8,8 +8,7 @@ import java.io.StringWriter
 import no.froden.scalapost._
 import no.froden.scalapost.Message
 
-trait Api[M[+ _]] {
-  self: HttpService[M] with ErrorReporting[M] =>
+trait Api[M[+_]] extends HttpService[M] with ErrorReporting[M] {
   lazy val baseUrl = "https://api.digipost.no"
 
   val userId: Long

@@ -1,14 +1,12 @@
 package no.froden.scalapost
 
-import internal.{Digipost, GenericHttpService, Crypto}
+import internal.{Digipost, SimpleHttpService, Crypto}
 import java.io.InputStream
 import scalaz._
 import Scalaz._
 
 class SimpleDigipostClient(val userId: Long, certificate: InputStream, passPhrase: String)
-  extends Digipost[Id] with GenericHttpService[Id] {
-
-  override implicit def M = id
+  extends Digipost[Id] with SimpleHttpService {
 
   override val signature = Crypto.sign(certificate, passPhrase).get
 

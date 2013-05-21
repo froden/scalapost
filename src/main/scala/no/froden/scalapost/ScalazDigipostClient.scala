@@ -8,9 +8,7 @@ import no.froden.scalapost.Implicits.FutureResultMonad
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ScalazDigipostClient(val userId: Long, certificate: InputStream, passPhrase: String)
-  extends Digipost[FutureResult] with GenericHttpService[FutureResult] {
-
-  override implicit def M = FutureResultMonad
+  extends Digipost[FutureResult] with ScalazHttpService {
 
   override val signature = Crypto.sign(certificate, passPhrase).get
 
