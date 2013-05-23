@@ -1,8 +1,29 @@
 package no.froden.scalapost
 
-import xml.{NodeSeq, Elem}
+import scala.xml.{Node, NodeSeq, Elem}
 
-case class Message(messageId: String, subject:String, recipient: Recipient) {
+trait XmlMessage {
+  def toXml: Node
+}
+
+case class Invoice(messageId: String, subject:String, recipient: Recipient, kid: String, amount: String, account: String, dueDate: String) extends XmlMessage {
+  def toXml = {
+    <invoice xmlns="http://api.digipost.no/schema/v3">
+      <message-id>{messageId}</message-id>
+      <subject>{subject}</subject>
+      <recipient>{recipient.toXml}</recipient>
+      <sms-notification/>
+      <authentication-level>PASSWORD</authentication-level>
+      <sensitivity-level>NORMAL</sensitivity-level>
+      <kid>{kid}</kid>
+      <amount>{amount}</amount>
+      <account>{account}</account>
+      <due-date>{dueDate}</due-date>
+    </invoice>
+  }
+}
+
+case class Message(messageId: String, subject:String, recipient: Recipient) extends XmlMessage {
   def toXml =
     <message xmlns="http://api.digipost.no/schema/v3">
       <message-id>{messageId}</message-id>

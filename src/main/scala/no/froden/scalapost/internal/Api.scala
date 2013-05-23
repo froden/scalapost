@@ -6,7 +6,7 @@ import dispatch.{Http, RawUri}
 import java.text.SimpleDateFormat
 import java.io.StringWriter
 import no.froden.scalapost._
-import no.froden.scalapost.Message
+import no.froden.scalapost.XmlMessage
 
 trait Api[M[+_]] extends HttpService[M] with ErrorReporting[M] {
   lazy val baseUrl = "https://api.digipost.no"
@@ -23,7 +23,7 @@ trait Api[M[+_]] extends HttpService[M] with ErrorReporting[M] {
     post(uri, reqHeaders, bytes)
   }
 
-  def postMessage(uri: String, msg: Message): M[Elem] = {
+  def postMessage(uri: String, msg: XmlMessage): M[Elem] = {
     postBytes(uri, msg.toXml.toXmlBytes, "application/vnd.digipost-v3+xml")
   }
 

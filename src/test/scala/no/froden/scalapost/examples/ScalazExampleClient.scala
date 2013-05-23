@@ -2,9 +2,7 @@ package no.froden.scalapost.examples
 
 import concurrent.{duration, Await}
 import scala.Predef._
-import scala.util
-import util.Random
-import no.froden.scalapost.{DigipostAddress, Message, ScalazDigipostClient}
+import no.froden.scalapost.{Message, DigipostAddress, ScalazDigipostClient}
 import no.froden.scalapost.internal.IO
 
 object ScalazExampleClient {
