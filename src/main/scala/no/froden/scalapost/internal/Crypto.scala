@@ -20,20 +20,19 @@ object Crypto {
         keyStore.getKey(onlyKeyAlias, password.toCharArray).asInstanceOf[RSAPrivateCrtKey]
       }
 
-  def initSignature(privateKey: PrivateKey) = Try {
+  def initSignature() = Try {
     Security.addProvider(new BouncyCastleProvider())
-    val instance = Signature.getInstance("SHA256WithRSAEncryption")
-    instance.initSign(privateKey)
-    instance
   }
 
   def sign(certificateStream: InputStream, password: String): Try[String => String] =
     for {
       privateKey <- loadKeyFromP12(certificateStream, password)
-      signature <- initSignature(privateKey)
+      _ <- initSignature()
     } yield (messageToSign: String) => {
-      signature.update(messageToSign.getBytes)
-      new String(Base64.encode(signature.sign))
+      val instance = Signature.getInstance("SHA256WithRSAEncryption")
+      instance.initSign(privateKey)
+      instance.update(messageToSign.getBytes)
+      new String(Base64.encode(instance.sign))
     }
 
 }
