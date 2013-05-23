@@ -9,7 +9,7 @@ import no.froden.scalapost._
 import no.froden.scalapost.XmlMessage
 
 trait Api[M[+_]] extends HttpService[M] with ErrorReporting[M] {
-  lazy val baseUrl = "https://api.digipost.no"
+  val baseUrl = "https://api.digipost.no"
 
   val userId: Long
   val signature: String => String
